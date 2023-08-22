@@ -3,15 +3,18 @@ services:
         build: .
         restart: always
         depends_on:
-        - db
-        ports:
-        - 9090:80
+            - tabby-db
         environment:
         - DATABASE_URL=mysql://tabby:yf^!FThbPK833Q@db/tabby
         - PORT=80
         - DEBUG=False
         - DOCKERIZE_ARGS="-wait tcp://tabby-db:3306 -timeout 60s"
-        # - APP_DIST_STORAGE="file:///app-dist"
+        labels:
+            - "traefik.enable=true"
+            - "traefik.http.routers.tabby.rule=Host(`tabby.avila-fernandes.com`)"
+            - "traefik.http.routers.tabby.entrypoints=websecure"
+            - "traefik.http.routers.tabby.tls.certresolver=letsencrypt"
+            - "traefik.http.services.tabby.loadbalancer.server.port=80"
         networks:
             - frontend 
             - backend
