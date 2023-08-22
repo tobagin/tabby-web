@@ -3,36 +3,21 @@ services:
         build: .
         restart: always
         depends_on:
-            - tabby-db
+        - db
+        ports:
+        - 9090:80
         environment:
-        - DATABASE_URL=mysql://tabby:yf^!FThbPK833Q@db/tabby
+        - DATABASE_URL=mysql://root:123@db/tabby
         - PORT=80
         - DEBUG=False
-        - DOCKERIZE_ARGS="-wait tcp://tabby-db:3306 -timeout 60s"
-        labels:
-            - "traefik.enable=true"
-            - "traefik.http.routers.tabby.rule=Host(`tabby.avila-fernandes.com`)"
-            - "traefik.http.routers.tabby.entrypoints=websecure"
-            - "traefik.http.routers.tabby.tls.certresolver=letsencrypt"
-            - "traefik.http.services.tabby.loadbalancer.server.port=80"
-        networks:
-            - frontend 
-            - backend
+        - DOCKERIZE_ARGS="-wait tcp://db:3306 -timeout 60s"
+        # - APP_DIST_STORAGE="file:///app-dist"
 
-
-    tabby-db:
-        image: mariadb
+    db:
+        image: mariadb:10.7.1
         restart: always
         environment:
             MARIADB_DATABASE: tabby
-            MARIADB_USER: tabby
-            MARIADB_PASSWORD: yf^!FThbPK833Q
-            MYSQL_ROOT_PASSWORD: AN7dau%7%2#wLm
-        volumes:
-            - tabby-db:/var/lib/mysql
-        networks:
-            - backend
-
-volumes:
-    tabby-db:
-        external: true
+            MARIADB_USER: user
+            MARIADB_PASSWORD: 123
+            MYSQL_ROOT_PASSWORD: 123
